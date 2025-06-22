@@ -86,7 +86,7 @@ in {
 
       # Window resizing
       "ctrl+shift+r" = "start_resizing_window";
-      "ctrl+shift+home" = "resize_window reset";
+      "ctrl+shift+0" = "resize_window reset";
 
       # Scrolling
       "ctrl+shift+up" = "scroll_line_up";
