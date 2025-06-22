@@ -16,6 +16,9 @@ Thumbs.db
 .idea/
 *.code-workspace
 
+# Claude Code settings (local configuration)
+.claude/
+
 # Nix specific
 .direnv/
 
