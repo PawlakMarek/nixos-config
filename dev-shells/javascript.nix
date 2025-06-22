@@ -1,5 +1,7 @@
 {pkgs}:
 pkgs.mkShell {
+  name = "javascript";
+
   buildInputs = with pkgs; [
     # Node.js
     nodejs_24

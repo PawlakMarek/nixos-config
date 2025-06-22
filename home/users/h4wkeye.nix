@@ -12,12 +12,19 @@
   gtkThemeName = "catppuccin-${themingCfg.variant}-${themingCfg.accent}-standard";
   xfwmThemeName = themeHelpers.generateThemeName themingCfg.variant themingCfg.accent;
   cursorThemeName = themeHelpers.generateCursorTheme themingCfg.variant themingCfg.accent;
+
+  # Global dev shell commands
+  devShellTools = import ../../lib/dev-shell-wrapper.nix {
+    inherit pkgs;
+    flakeRoot = "/home/h4wkeye/nixos-config";
+  };
 in {
   imports = [
     ../programs/cli-tools.nix
     ../programs/shell.nix
     ../programs/kitty.nix
     ../programs/tmux.nix
+    ../programs/zellij.nix
   ];
 
   # Basic user configuration
@@ -25,6 +32,9 @@ in {
     username = "h4wkeye";
     homeDirectory = "/home/h4wkeye";
     stateVersion = "25.05";
+
+    # Global dev shell commands
+    packages = devShellTools.devShellCommands;
   };
 
   # Let Home Manager manage itself
