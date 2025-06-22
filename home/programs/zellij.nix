@@ -1,4 +1,33 @@
-{pkgs, ...}: {
+{
+  pkgs,
+  lib,
+  osConfig,
+  ...
+}: let
+  # Access theming configuration from NixOS config
+  themingCfg = osConfig.modules.desktop.theming;
+
+  # Catppuccin color mappings for accents
+  accentColors = {
+    rosewater = "#f5e0dc";
+    flamingo = "#f2cdcd";
+    pink = "#f5c2e7";
+    mauve = "#cba6f7";
+    red = "#f38ba8";
+    maroon = "#eba0ac";
+    peach = "#fab387";
+    yellow = "#f9e2af";
+    green = "#a6e3a1";
+    teal = "#94e2d5";
+    sky = "#89dceb";
+    sapphire = "#74c7ec";
+    blue = "#89b4fa";
+    lavender = "#b4befe";
+  };
+
+  # Get the accent color for the current theme
+  accentColor = accentColors.${themingCfg.accent} or accentColors.peach;
+in {
   programs.zellij = {
     enable = true;
     settings = {
@@ -125,11 +154,11 @@
           bg "#181825"
           fg "#cdd6f4"
           red "#f38ba8"
-          green "#a6e3a1"
+          green "${accentColor}"
           blue "#89b4fa"
           yellow "#f9e2af"
           magenta "#f5c2e7"
-          orange "#fab387"
+          orange "${accentColor}"
           cyan "#94e2d5"
           black "#11111b"
           white "#ffffff"
