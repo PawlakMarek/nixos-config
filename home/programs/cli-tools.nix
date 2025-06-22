@@ -27,6 +27,10 @@
     btop
     neofetch
 
+    # Terminal multiplexers
+    tmux
+    zellij
+
     # Development tools
     jq # JSON processor
     yq # YAML processor
