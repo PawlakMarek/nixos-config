@@ -26,7 +26,8 @@
       "Bash(export:*)",
       "Bash(echo:*)",
       "Bash(home-manager switch:*)",
-      "Bash(./scripts/check-quality.sh:*)"
+      "Bash(./scripts/check-quality.sh:*)",
+      "Bash(git pull:*)"
     ],
     "deny": []
   }
