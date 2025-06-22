@@ -1,0 +1,38 @@
+# Build results
+result
+result-*
+
+# OS specific
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*~
+*.tmp
+*.swp
+
+# IDE/Editor files
+.vscode/
+.idea/
+*.code-workspace
+
+# Nix specific
+.direnv/
+
+# Age keys (keep these secret!)
+secrets/*.key
+*.age
+
+# Hardware-specific files that shouldn't be shared
+hardware-configuration.nix.*
+
+# Local development overrides
+local.nix
+override.nix
+
+# Backup files
+*.bak
+*.backup
+
+# Log files
+*.log

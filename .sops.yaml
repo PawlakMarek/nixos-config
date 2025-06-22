@@ -1,0 +1,26 @@
+# SOPS configuration for NixOS secrets management
+# This file defines encryption keys and file patterns
+
+keys:
+  # Age key for this system (you'll need to generate this)
+  # Run: age-keygen to generate a new key
+  - &host_h4wkeye_dev age17g6nfqlumwr49tj78yf93c6kcl6r3aj204gh9uuk05yktn4hm3xqnnrrzg
+
+creation_rules:
+  # Secrets for all hosts
+  - path_regex: secrets/[^/]+\.yaml$
+    key_groups:
+    - age:
+      - *host_h4wkeye_dev
+    
+  # Host-specific secrets  
+  - path_regex: secrets/hosts/h4wkeye-dev/[^/]+\.yaml$
+    key_groups:
+    - age:
+      - *host_h4wkeye_dev
+
+  # Network secrets (Wi-Fi)
+  - path_regex: secrets/network/[^/]+\.yaml$
+    key_groups:
+    - age:
+      - *host_h4wkeye_dev

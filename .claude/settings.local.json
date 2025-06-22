@@ -1,0 +1,32 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find:*)",
+      "Bash(tree:*)",
+      "Bash(ls:*)",
+      "Bash(mkdir:*)",
+      "Bash(nix flake check:*)",
+      "Bash(deadnix:*)",
+      "Bash(rg:*)",
+      "Bash(nix eval:*)",
+      "Bash(systemctl status:*)",
+      "Bash(nmcli connection:*)",
+      "Bash(grep:*)",
+      "Bash(xfconf-query:*)",
+      "Bash(pamixer:*)",
+      "Bash(alejandra:*)",
+      "Bash(nix-instantiate:*)",
+      "Bash(awk:*)",
+      "Bash(gsettings get:*)",
+      "Bash(gsettings set:*)",
+      "Bash(echo $GTK_THEME)",
+      "Bash(cat:*)",
+      "Bash(env)",
+      "Bash(unset GTK_THEME)",
+      "Bash(export:*)",
+      "Bash(echo:*)",
+      "Bash(home-manager switch:*)"
+    ],
+    "deny": []
+  }
+}
