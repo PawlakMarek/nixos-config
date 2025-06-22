@@ -118,10 +118,14 @@
 
   nix.settings.experimental-features = ["nix-command" "flakes"];
 
+  # Enable zsh system-wide for shell integration
+  programs.zsh.enable = true;
+
   # User account configuration
   users.users.h4wkeye = {
     isNormalUser = true;
     extraGroups = ["wheel" "audio" "bluetooth"];
+    shell = pkgs.zsh;
   };
 
   # Home Manager configuration
