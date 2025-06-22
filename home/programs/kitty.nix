@@ -97,7 +97,7 @@ in {
       "ctrl+shift+end" = "scroll_end";
 
       # Search
-      "ctrl+shift+f" = "show_scrollback";
+      "ctrl+shift+s" = "show_scrollback";
 
       # Font sizing
       "ctrl+shift+equal" = "change_font_size all +2.0";
