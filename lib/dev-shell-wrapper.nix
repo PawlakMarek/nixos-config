@@ -76,7 +76,7 @@
   '';
 
   # Create individual shell commands for convenience
-  rustShell = pkgs.writeShellScriptBin "rust" ''
+  rustShell = pkgs.writeShellScriptBin "rust-dev" ''
     exec ${devShellWrapper}/bin/dev-shell rust "$@"
   '';
 

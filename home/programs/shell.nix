@@ -75,7 +75,7 @@
 
         # Development environment shortcuts
         dev = "dev-shell";
-        rust-env = "rust";
+        rust-env = "rust-dev";
         py-env = "python-dev";
         js-env = "js-dev";
         nix-env = "nix-dev";
