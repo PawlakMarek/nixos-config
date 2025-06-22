@@ -63,6 +63,7 @@
           python = import ./dev-shells/python.nix {inherit pkgs;};
           javascript = import ./dev-shells/javascript.nix {inherit pkgs;};
           nix = import ./dev-shells/nix.nix {inherit pkgs;};
+          nixos = import ./dev-shells/nixos.nix {inherit pkgs;};
         };
       };
 

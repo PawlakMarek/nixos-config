@@ -11,7 +11,7 @@
     FLAKE_ROOT="${flakeRoot}"
 
     # Available dev shells
-    AVAILABLE_SHELLS=("rust" "python" "javascript" "nix" "default")
+    AVAILABLE_SHELLS=("rust" "python" "javascript" "nix" "nixos" "default")
 
     # Help function
     show_help() {
@@ -67,12 +67,20 @@
     # Export the original directory so scripts inside can use it
     export DEV_SHELL_ORIGINAL_DIR="$ORIGINAL_DIR"
 
-    # Enter the dev shell with the original directory as working directory
+    # Enter the dev shell with the appropriate working directory
     cd "$FLAKE_ROOT"
 
     # Use the user's preferred shell, falling back to zsh if SHELL is not set
     USER_SHELL=''${SHELL:-/usr/bin/env zsh}
-    exec nix develop ".#$SHELL_NAME" --command bash -c "cd '$ORIGINAL_DIR' && exec '$USER_SHELL'"
+
+    # Special handling for nixos dev shell - always start in nixos-config directory
+    if [[ "$SHELL_NAME" == "nixos" ]]; then
+      echo "🏗️  Starting in NixOS configuration directory"
+      exec nix develop ".#$SHELL_NAME" --command bash -c "cd '$FLAKE_ROOT' && exec '$USER_SHELL'"
+    else
+      # For other dev shells, preserve the original directory
+      exec nix develop ".#$SHELL_NAME" --command bash -c "cd '$ORIGINAL_DIR' && exec '$USER_SHELL'"
+    fi
   '';
 
   # Create individual shell commands for convenience
@@ -91,6 +99,10 @@
   nixShell = pkgs.writeShellScriptBin "nix-dev" ''
     exec ${devShellWrapper}/bin/dev-shell nix "$@"
   '';
+
+  nixosShell = pkgs.writeShellScriptBin "nixos-dev" ''
+    exec ${devShellWrapper}/bin/dev-shell nixos "$@"
+  '';
 in {
   # Export the wrapper and convenience commands
   inherit devShellWrapper;
@@ -100,5 +112,6 @@ in {
     pythonShell
     jsShell
     nixShell
+    nixosShell
   ];
 }
