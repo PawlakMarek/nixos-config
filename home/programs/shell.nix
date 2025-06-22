@@ -79,6 +79,7 @@
         py-env = "python-dev";
         js-env = "js-dev";
         nix-env = "nix-dev";
+        nixos-env = "nixos-dev";
       };
 
       initContent = ''
