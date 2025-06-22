@@ -79,12 +79,7 @@
 
           # Sessions
           "bind \"d\"" = {Detach = {};};
-          "bind \"w\"" = {
-            LaunchOrFocusPlugin = {
-              file_to_open = "session-manager";
-              should_open_in_place = true;
-            };
-          };
+          "bind \"w\"" = {SwitchToMode = "Session";}; # Switch to session mode instead
         };
 
         resize = {
@@ -107,7 +102,6 @@
         status-bar = {path = "status-bar";};
         strider = {path = "strider";};
         compact-bar = {path = "compact-bar";};
-        session-manager = {path = "session-manager";};
       };
 
       # Layout configuration
