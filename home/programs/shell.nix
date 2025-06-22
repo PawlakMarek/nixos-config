@@ -65,13 +65,20 @@
         dl = "cd ~/Downloads";
         dt = "cd ~/Desktop";
         doc = "cd ~/Documents";
-        dev = "cd ~/dev";
+        devdir = "cd ~/dev";
 
         # System shortcuts
         ports = "ss -tuln";
         path = "echo $PATH | tr ':' '\n'";
         reload = "exec $SHELL";
         cls = "clear";
+
+        # Development environment shortcuts
+        dev = "dev-shell";
+        rust-env = "rust";
+        py-env = "python-dev";
+        js-env = "js-dev";
+        nix-env = "nix-dev";
       };
 
       initContent = ''
@@ -270,9 +277,10 @@
         };
 
         nix_shell = {
-          format = "via [$symbol$state( \\($name\\))]($style) ";
+          format = "via [$symbol$name]($style) ";
           symbol = "❄️ ";
           style = "bold blue";
+          heuristic = true;
         };
 
         username = {

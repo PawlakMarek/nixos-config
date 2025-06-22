@@ -1,5 +1,7 @@
 {pkgs}:
 pkgs.mkShell {
+  name = "python";
+
   buildInputs = with pkgs; [
     # Python
     python313

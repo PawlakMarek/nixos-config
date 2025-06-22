@@ -1,5 +1,7 @@
 {pkgs}:
 pkgs.mkShell {
+  name = "nix";
+
   buildInputs = with pkgs; [
     # Nix tools
     lix
