@@ -6,7 +6,7 @@
 }:
 with lib; let
   cfg = config.modules.desktop.xfce;
-  
+
   # Plugin ID constants to avoid magic numbers
   audioPluginId = 19;
   powerManagerPluginId = 20;

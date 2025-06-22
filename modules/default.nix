@@ -1,7 +1,5 @@
 # Central module export for the entire configuration
-{lib, ...}: let
-  inherit (lib) mkDefault;
-in {
+{lib, ...}: {
   imports = [
     # Core system modules
     ./core/audio.nix

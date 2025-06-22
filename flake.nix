@@ -87,7 +87,7 @@
 
                 # Catppuccin theming
                 inputs.catppuccin.nixosModules.catppuccin
-                
+
                 # Centralized module imports
                 ./modules
               ]
@@ -111,8 +111,8 @@
                       };
 
                       programs.git = {
-                        userName = "h4wkeye";
-                        userEmail = "user@example.com"; # TODO: Update with actual email
+                        userName = "PawlakMarek";
+                        userEmail = "26022173+PawlakMarek@users.noreply.github.com";
                       };
                     };
 

@@ -105,16 +105,16 @@ in {
       })
 
       (mkIf cfg.network.enableSynCookies {
-        "net.ipv4.tcp_syncookies" = 1;
+        "net.ipv4.tcp_syncookies" = lib.mkDefault 1;
       })
 
       (mkIf cfg.network.disableICMPRedirects {
-        "net.ipv4.conf.all.accept_redirects" = 0;
-        "net.ipv4.conf.default.accept_redirects" = 0;
-        "net.ipv6.conf.all.accept_redirects" = 0;
-        "net.ipv6.conf.default.accept_redirects" = 0;
-        "net.ipv4.conf.all.send_redirects" = 0;
-        "net.ipv4.conf.default.send_redirects" = 0;
+        "net.ipv4.conf.all.accept_redirects" = lib.mkDefault 0;
+        "net.ipv4.conf.default.accept_redirects" = lib.mkDefault 0;
+        "net.ipv6.conf.all.accept_redirects" = lib.mkDefault 0;
+        "net.ipv6.conf.default.accept_redirects" = lib.mkDefault 0;
+        "net.ipv4.conf.all.send_redirects" = lib.mkDefault 0;
+        "net.ipv4.conf.default.send_redirects" = lib.mkDefault 0;
       })
 
       (mkIf cfg.network.disableIPv6 {
@@ -127,15 +127,15 @@ in {
         # Prevent privilege escalation
         "kernel.dmesg_restrict" = 1;
         "kernel.kptr_restrict" = 2;
-        
+
         # Network security
-        "net.ipv4.conf.all.log_martians" = 1;
-        "net.ipv4.conf.default.log_martians" = 1;
-        "net.ipv4.conf.all.rp_filter" = 1;
-        "net.ipv4.conf.default.rp_filter" = 1;
-        "net.ipv4.icmp_echo_ignore_broadcasts" = 1;
-        "net.ipv4.icmp_ignore_bogus_error_responses" = 1;
-        
+        "net.ipv4.conf.all.log_martians" = lib.mkDefault 1;
+        "net.ipv4.conf.default.log_martians" = lib.mkDefault 1;
+        "net.ipv4.conf.all.rp_filter" = lib.mkDefault 1;
+        "net.ipv4.conf.default.rp_filter" = lib.mkDefault 1;
+        "net.ipv4.icmp_echo_ignore_broadcasts" = lib.mkDefault 1;
+        "net.ipv4.icmp_ignore_bogus_error_responses" = lib.mkDefault 1;
+
         # Memory protection
         "vm.mmap_rnd_bits" = 32;
         "vm.mmap_rnd_compat_bits" = 16;
@@ -144,25 +144,25 @@ in {
 
     # Kernel module blacklist for unused/dangerous protocols
     boot.blacklistedKernelModules = mkIf cfg.kernel.disableUnusedNetworkProtocols [
-      "dccp"    # Datagram Congestion Control Protocol
-      "sctp"    # Stream Control Transmission Protocol
-      "rds"     # Reliable Datagram Sockets
-      "tipc"    # Transparent Inter Process Communication
-      "n-hdlc"  # New High-level Data Link Control
-      "ax25"    # Amateur Radio AX.25
-      "netrom"  # NET/ROM
-      "x25"     # X.25
-      "rose"    # ROSE
-      "decnet"  # DECnet
-      "econet"  # Econet
+      "dccp" # Datagram Congestion Control Protocol
+      "sctp" # Stream Control Transmission Protocol
+      "rds" # Reliable Datagram Sockets
+      "tipc" # Transparent Inter Process Communication
+      "n-hdlc" # New High-level Data Link Control
+      "ax25" # Amateur Radio AX.25
+      "netrom" # NET/ROM
+      "x25" # X.25
+      "rose" # ROSE
+      "decnet" # DECnet
+      "econet" # Econet
       "af_802154" # IEEE 802.15.4
-      "ipx"     # IPX
+      "ipx" # IPX
       "appletalk" # AppleTalk
-      "psnap"   # SubNetwork Access Protocol
-      "p8023"   # 802.3
-      "p8022"   # 802.2
-      "can"     # Controller Area Network
-      "atm"     # Asynchronous Transfer Mode
+      "psnap" # SubNetwork Access Protocol
+      "p8023" # 802.3
+      "p8022" # 802.2
+      "can" # Controller Area Network
+      "atm" # Asynchronous Transfer Mode
     ];
 
     # AppArmor support
@@ -194,9 +194,10 @@ in {
     };
 
     # Additional security packages
-    environment.systemPackages = with pkgs; mkIf cfg.enable [
-      lynis       # Security auditing tool
-      chkrootkit  # Rootkit checker
-    ];
+    environment.systemPackages = with pkgs;
+      mkIf cfg.enable [
+        lynis # Security auditing tool
+        chkrootkit # Rootkit checker
+      ];
   };
 }

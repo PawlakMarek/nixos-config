@@ -61,25 +61,26 @@
     performance.enable = true;
   };
 
-  # Desktop environment
-  modules.desktop.xfce = {
-    enable = true;
-    panel = {
-      enableAudioPlugin = true;
-      enablePowerManagerPlugin = true;
+  # Desktop configuration
+  modules.desktop = {
+    xfce = {
+      enable = true;
+      panel = {
+        enableAudioPlugin = true;
+        enablePowerManagerPlugin = true;
+      };
+      defaultApplications.enable = true;
     };
-    defaultApplications.enable = true;
-  };
 
-  # System theming
-  modules.desktop.theming = {
-    enable = true;
-    variant = "mocha";
-    accent = "peach";
-    applications = {
-      firefox = true;
-      thunderbird = true;
-      kvantum = true;
+    theming = {
+      enable = true;
+      variant = "mocha";
+      accent = "peach";
+      applications = {
+        firefox = true;
+        thunderbird = true;
+        kvantum = true;
+      };
     };
   };
 

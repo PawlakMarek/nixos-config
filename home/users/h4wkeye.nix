@@ -1,5 +1,4 @@
 {
-  config,
   lib,
   pkgs,
   osConfig,
@@ -156,48 +155,111 @@ in {
     };
   };
 
-  # XFCE Terminal configuration as fallback
-  xdg.configFile."xfce4/terminal/terminalrc".text = ''
-    [Configuration]
-    FontName=JetBrainsMono Nerd Font 12
-    MiscAlwaysShowTabs=FALSE
-    MiscBell=FALSE
-    MiscBellUrgent=FALSE
-    MiscBordersDefault=TRUE
-    MiscCursorBlinks=FALSE
-    MiscCursorShape=TERMINAL_CURSOR_SHAPE_BLOCK
-    MiscDefaultGeometry=80x24
-    MiscInheritGeometry=FALSE
-    MiscMenubarDefault=TRUE
-    MiscMouseAutohide=FALSE
-    MiscMouseWheelZoom=TRUE
-    MiscToolbarDefault=FALSE
-    MiscConfirmClose=TRUE
-    MiscCycleTabs=TRUE
-    MiscTabCloseButtons=TRUE
-    MiscTabCloseMiddleClick=TRUE
-    MiscTabPosition=GTK_POS_TOP
-    MiscHighlightUrls=TRUE
-    MiscMiddleClickOpensUri=FALSE
-    MiscCopyOnSelect=FALSE
-    MiscShowRelaunchDialog=TRUE
-    MiscRewrapOnResize=TRUE
-    MiscUseShiftArrowsToSelect=FALSE
-    MiscSlimTabs=FALSE
-    MiscNewTabAdjacent=FALSE
-    MiscSearchDialogOpacity=100
-    MiscShowUnsafePasteDialog=TRUE
-    MiscRightClickAction=TERMINAL_RIGHT_CLICK_ACTION_CONTEXT_MENU
-    BackgroundMode=TERMINAL_BACKGROUND_TRANSPARENT
-    BackgroundDarkness=0.900000
-    # Catppuccin Mocha color scheme
-    ColorForeground=#cdd6f4
-    ColorBackground=#1e1e2e
-    ColorCursor=#f5e0dc
-    ColorBold=#cdd6f4
-    ColorBoldUseDefault=FALSE
-    ColorPalette=#45475a;#f38ba8;#a6e3a1;#f9e2af;#89b4fa;#f5c2e7;#94e2d5;#bac2de;#585b70;#f38ba8;#a6e3a1;#f9e2af;#89b4fa;#f5c2e7;#94e2d5;#a6adc8
-  '';
+  # Configuration files
+  xdg.configFile = {
+    "xfce4/terminal/terminalrc".text = ''
+      [Configuration]
+      FontName=JetBrainsMono Nerd Font 12
+      MiscAlwaysShowTabs=FALSE
+      MiscBell=FALSE
+      MiscBellUrgent=FALSE
+      MiscBordersDefault=TRUE
+      MiscCursorBlinks=FALSE
+      MiscCursorShape=TERMINAL_CURSOR_SHAPE_BLOCK
+      MiscDefaultGeometry=80x24
+      MiscInheritGeometry=FALSE
+      MiscMenubarDefault=TRUE
+      MiscMouseAutohide=FALSE
+      MiscMouseWheelZoom=TRUE
+      MiscToolbarDefault=FALSE
+      MiscConfirmClose=TRUE
+      MiscCycleTabs=TRUE
+      MiscTabCloseButtons=TRUE
+      MiscTabCloseMiddleClick=TRUE
+      MiscTabPosition=GTK_POS_TOP
+      MiscHighlightUrls=TRUE
+      MiscMiddleClickOpensUri=FALSE
+      MiscCopyOnSelect=FALSE
+      MiscShowRelaunchDialog=TRUE
+      MiscRewrapOnResize=TRUE
+      MiscUseShiftArrowsToSelect=FALSE
+      MiscSlimTabs=FALSE
+      MiscNewTabAdjacent=FALSE
+      MiscSearchDialogOpacity=100
+      MiscShowUnsafePasteDialog=TRUE
+      MiscRightClickAction=TERMINAL_RIGHT_CLICK_ACTION_CONTEXT_MENU
+      BackgroundMode=TERMINAL_BACKGROUND_TRANSPARENT
+      BackgroundDarkness=0.900000
+      # Catppuccin Mocha color scheme
+      ColorForeground=#cdd6f4
+      ColorBackground=#1e1e2e
+      ColorCursor=#f5e0dc
+      ColorBold=#cdd6f4
+      ColorBoldUseDefault=FALSE
+      ColorPalette=#45475a;#f38ba8;#a6e3a1;#f9e2af;#89b4fa;#f5c2e7;#94e2d5;#bac2de;#585b70;#f38ba8;#a6e3a1;#f9e2af;#89b4fa;#f5c2e7;#94e2d5;#a6adc8
+    '';
+
+    "autostart/apply-catppuccin-theme.desktop".text = ''
+      [Desktop Entry]
+      Type=Application
+      Name=Apply Catppuccin Theme
+      Comment=Force apply Catppuccin theme on startup
+      Exec=${pkgs.writeShellScript "apply-catppuccin-theme" ''
+        #!/bin/bash
+
+        # Wait for XFCE to be ready
+        sleep 2
+
+        # Apply GTK theme via gsettings
+        ${pkgs.glib}/bin/gsettings set org.gnome.desktop.interface gtk-theme '${gtkThemeName}'
+        ${pkgs.glib}/bin/gsettings set org.gnome.desktop.interface icon-theme 'Papirus-Dark'
+        ${pkgs.glib}/bin/gsettings set org.gnome.desktop.interface cursor-theme '${cursorThemeName}'
+        ${pkgs.glib}/bin/gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'
+        ${pkgs.glib}/bin/gsettings set org.gnome.desktop.interface font-name 'Inter 11'
+        ${pkgs.glib}/bin/gsettings set org.gnome.desktop.interface monospace-font-name 'JetBrainsMono Nerd Font 11'
+
+        # Apply XFCE settings
+        ${pkgs.xfce.xfconf}/bin/xfconf-query -c xsettings -p /Net/ThemeName -s '${gtkThemeName}'
+        ${pkgs.xfce.xfconf}/bin/xfconf-query -c xsettings -p /Net/IconThemeName -s 'Papirus-Dark'
+        ${pkgs.xfce.xfconf}/bin/xfconf-query -c xsettings -p /Gtk/CursorThemeName -s '${cursorThemeName}'
+        ${pkgs.xfce.xfconf}/bin/xfconf-query -c xsettings -p /Gtk/FontName -s 'Inter 11'
+        ${pkgs.xfce.xfconf}/bin/xfconf-query -c xsettings -p /Gtk/MonospaceFontName -s 'JetBrainsMono Nerd Font 11'
+
+        # Apply window manager theme
+        ${pkgs.xfce.xfconf}/bin/xfconf-query -c xfwm4 -p /general/theme -s '${xfwmThemeName}'
+        ${pkgs.xfce.xfconf}/bin/xfconf-query -c xfwm4 -p /general/title_font -s 'Inter Bold 11'
+
+        # Restart XFCE components to apply changes
+        ${pkgs.xfce.xfce4-panel}/bin/xfce4-panel --restart &
+        ${pkgs.xfce.xfwm4}/bin/xfwm4 --replace &
+      ''}
+      Terminal=false
+      Hidden=false
+      X-GNOME-Autostart-enabled=true
+      StartupNotify=false
+      OnlyShowIn=XFCE;
+    '';
+
+    "gtk-3.0/settings.ini".text = ''
+      [Settings]
+      gtk-theme-name=${gtkThemeName}
+      gtk-icon-theme-name=Papirus-Dark
+      gtk-cursor-theme-name=${cursorThemeName}
+      gtk-cursor-theme-size=24
+      gtk-font-name=Inter 11
+      gtk-application-prefer-dark-theme=true
+    '';
+
+    "gtk-4.0/settings.ini".text = ''
+      [Settings]
+      gtk-theme-name=${gtkThemeName}
+      gtk-icon-theme-name=Papirus-Dark
+      gtk-cursor-theme-name=${cursorThemeName}
+      gtk-cursor-theme-size=24
+      gtk-font-name=Inter 11
+      gtk-application-prefer-dark-theme=true
+    '';
+  };
 
   # GTK theming with dconf
   dconf.settings = {
@@ -220,69 +282,6 @@ in {
   services = {
     gnome-keyring.enable = true;
   };
-
-  # Autostart script to force theme application
-  xdg.configFile."autostart/apply-catppuccin-theme.desktop".text = ''
-    [Desktop Entry]
-    Type=Application
-    Name=Apply Catppuccin Theme
-    Comment=Force apply Catppuccin theme on startup
-    Exec=${pkgs.writeShellScript "apply-catppuccin-theme" ''
-      #!/bin/bash
-
-      # Wait for XFCE to be ready
-      sleep 2
-
-      # Apply GTK theme via gsettings
-      ${pkgs.glib}/bin/gsettings set org.gnome.desktop.interface gtk-theme '${gtkThemeName}'
-      ${pkgs.glib}/bin/gsettings set org.gnome.desktop.interface icon-theme 'Papirus-Dark'
-      ${pkgs.glib}/bin/gsettings set org.gnome.desktop.interface cursor-theme '${cursorThemeName}'
-      ${pkgs.glib}/bin/gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'
-      ${pkgs.glib}/bin/gsettings set org.gnome.desktop.interface font-name 'Inter 11'
-      ${pkgs.glib}/bin/gsettings set org.gnome.desktop.interface monospace-font-name 'JetBrainsMono Nerd Font 11'
-
-      # Apply XFCE settings
-      ${pkgs.xfce.xfconf}/bin/xfconf-query -c xsettings -p /Net/ThemeName -s '${gtkThemeName}'
-      ${pkgs.xfce.xfconf}/bin/xfconf-query -c xsettings -p /Net/IconThemeName -s 'Papirus-Dark'
-      ${pkgs.xfce.xfconf}/bin/xfconf-query -c xsettings -p /Gtk/CursorThemeName -s '${cursorThemeName}'
-      ${pkgs.xfce.xfconf}/bin/xfconf-query -c xsettings -p /Gtk/FontName -s 'Inter 11'
-      ${pkgs.xfce.xfconf}/bin/xfconf-query -c xsettings -p /Gtk/MonospaceFontName -s 'JetBrainsMono Nerd Font 11'
-
-      # Apply window manager theme
-      ${pkgs.xfce.xfconf}/bin/xfconf-query -c xfwm4 -p /general/theme -s '${xfwmThemeName}'
-      ${pkgs.xfce.xfconf}/bin/xfconf-query -c xfwm4 -p /general/title_font -s 'Inter Bold 11'
-
-      # Restart XFCE components to apply changes
-      ${pkgs.xfce.xfce4-panel}/bin/xfce4-panel --restart &
-      ${pkgs.xfce.xfwm4}/bin/xfwm4 --replace &
-    ''}
-    Terminal=false
-    Hidden=false
-    X-GNOME-Autostart-enabled=true
-    StartupNotify=false
-    OnlyShowIn=XFCE;
-  '';
-
-  # Create GTK configuration files directly
-  xdg.configFile."gtk-3.0/settings.ini".text = ''
-    [Settings]
-    gtk-theme-name=${gtkThemeName}
-    gtk-icon-theme-name=Papirus-Dark
-    gtk-cursor-theme-name=${cursorThemeName}
-    gtk-cursor-theme-size=24
-    gtk-font-name=Inter 11
-    gtk-application-prefer-dark-theme=true
-  '';
-
-  xdg.configFile."gtk-4.0/settings.ini".text = ''
-    [Settings]
-    gtk-theme-name=${gtkThemeName}
-    gtk-icon-theme-name=Papirus-Dark
-    gtk-cursor-theme-name=${cursorThemeName}
-    gtk-cursor-theme-size=24
-    gtk-font-name=Inter 11
-    gtk-application-prefer-dark-theme=true
-  '';
 
   # Add environment variables for theme
   home.sessionVariables = {

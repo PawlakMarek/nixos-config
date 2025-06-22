@@ -404,6 +404,94 @@ When adding new features, always consider:
 - Is the module self-contained and reusable?
 - Are the options clearly documented?
 - Does it follow established patterns and conventions?
+- Have you run the complete quality check pipeline?
+- Is the commit message descriptive and follows conventions?
+- Does the change work in a clean build environment?
+
+### Development Best Practices
+
+#### Git Commit Message Format
+
+Use [Conventional Commits](https://www.conventionalcommits.org/) format:
+
+```
+type(scope): short description
+
+Longer description explaining what changed and why.
+Include breaking changes, new features, bug fixes.
+
+🤖 Generated with [Claude Code](https://claude.ai/code)
+
+Co-Authored-By: Claude <noreply@anthropic.com>
+```
+
+**Types:**
+- `feat`: New feature
+- `fix`: Bug fix
+- `docs`: Documentation changes
+- `style`: Code style changes (formatting, etc.)
+- `refactor`: Code refactoring
+- `test`: Adding or fixing tests
+- `chore`: Maintenance tasks
+
+**Examples:**
+```bash
+git commit -m "feat(audio): add support for Pro Audio profile
+
+Add specialized audio configuration for low-latency recording:
+- Enable RT kernel modules when Pro Audio is detected
+- Configure PipeWire for minimal latency
+- Add JACK compatibility layer
+- Include audio group permissions
+
+Breaking change: Removes deprecated audio.pulseaudio option
+
+🤖 Generated with [Claude Code](https://claude.ai/code)
+
+Co-Authored-By: Claude <noreply@anthropic.com>
+"
+
+git commit -m "fix(luks): resolve TPM unsealing timeout issue
+
+Increase TPM operation timeout from 30s to 60s:
+- Addresses slow TPM chips in older hardware
+- Add retry logic for transient TPM failures
+- Improve error messages for troubleshooting
+
+Fixes #42
+
+🤖 Generated with [Claude Code](https://claude.ai/code)
+
+Co-Authored-By: Claude <noreply@anthropic.com>
+"
+
+git commit -m "refactor(theming): extract theme helpers to shared library
+
+Move theme generation logic to lib/theme-helpers.nix:
+- Eliminates code duplication between modules
+- Provides consistent theme naming across system
+- Adds validation for theme variants and accents
+- Improves maintainability
+
+🤖 Generated with [Claude Code](https://claude.ai/code)
+
+Co-Authored-By: Claude <noreply@anthropic.com>
+"
+```
+
+#### Code Review Checklist
+
+Before merging any changes:
+
+- [ ] **Functionality**: Does the code work as intended?
+- [ ] **Quality**: Passes alejandra, statix, deadnix, and nix flake check
+- [ ] **Testing**: Builds successfully and doesn't break existing functionality
+- [ ] **Documentation**: Options are documented with types, defaults, and examples
+- [ ] **Patterns**: Follows established module patterns and conventions
+- [ ] **Security**: No hardcoded secrets or security anti-patterns
+- [ ] **Performance**: No obvious performance regressions
+- [ ] **Compatibility**: Works with target NixOS versions
+- [ ] **Commit**: Proper commit message and git history
 
 ## Resources & References
 
@@ -412,3 +500,115 @@ When adding new features, always consider:
 - [Home Manager Options](https://nix-community.github.io/home-manager/options.html)
 - [NixVim Configuration](https://nix-community.github.io/nixvim/)
 - [SOPS-Nix Documentation](https://github.com/Mic92/sops-nix)
+
+---
+
+# Claude Code Development Standards (MANDATORY)
+
+## Git Workflow Requirements
+
+**CRITICAL**: Claude Code must follow these development practices for all work:
+
+### 1. Feature Branch Workflow (MANDATORY)
+- **NEVER commit directly to main branch**
+- **ALWAYS create feature branches** for any development work
+- Use descriptive branch names: `feature/module-name`, `fix/issue-description`, `refactor/component-name`
+
+### 2. Code Quality Pipeline (REQUIRED BEFORE EVERY COMMIT)
+
+Claude Code MUST run this complete pipeline before any commit:
+
+```bash
+# 1. Format code (MANDATORY)
+alejandra .
+
+# 2. Fix linting issues (MANDATORY) 
+statix check .  # Must show no warnings or errors
+
+# 3. Remove dead code (MANDATORY)
+deadnix .       # Must show no dead code
+
+# 4. Validate flake (MANDATORY)
+nix flake check # Must pass without errors
+
+# 5. Test build (MANDATORY)
+nixos-rebuild build --flake .#h4wkeye-dev  # Must build successfully
+```
+
+### 3. Commit Standards (REQUIRED)
+
+Every commit must:
+- Follow Conventional Commits format
+- Include Claude Code attribution
+- Have descriptive commit messages explaining what and why
+- Be made only after the complete quality pipeline passes
+
+### 4. Error Handling Protocol
+
+If ANY step in the quality pipeline fails:
+1. **STOP immediately** - do not proceed with commit
+2. **Fix the issue completely** - address all errors and warnings
+3. **Re-run the complete pipeline** to ensure all checks pass
+4. **Only then proceed** with commits and further development
+
+### 5. Development Rules (NON-NEGOTIABLE)
+
+1. **Always use feature branches** for any development work
+2. **Run complete quality pipeline** before every commit
+3. **Test builds** before considering work complete  
+4. **Follow established module patterns** and conventions
+5. **Never create files unless absolutely necessary** for the goal
+6. **Always prefer editing existing files** to creating new ones
+7. **Never proactively create documentation** unless explicitly requested
+
+### 6. Branch Management
+
+```bash
+# Starting new work
+git checkout main
+git pull origin main
+git checkout -b feature/descriptive-name
+
+# During development - commit frequently
+# (after running quality pipeline)
+git add .
+git commit -m "type(scope): description
+
+Detailed explanation...
+
+🤖 Generated with [Claude Code](https://claude.ai/code)
+
+Co-Authored-By: Claude <noreply@anthropic.com>"
+
+# Finishing work
+git push origin feature/descriptive-name
+# Create PR or merge to main
+git checkout main
+git merge feature/descriptive-name
+git push origin main
+git branch -d feature/descriptive-name
+```
+
+## Quality Assurance
+
+### Code Formatting
+- **alejandra** must pass without changes needed
+- All Nix code must follow consistent formatting
+
+### Linting 
+- **statix** must show zero warnings or errors
+- Common fixes: remove unnecessary `with`, fix deprecated syntax, optimize patterns
+
+### Dead Code Removal
+- **deadnix** must show no dead code
+- Remove unused variables, functions, imports
+
+### Flake Validation
+- **nix flake check** must pass completely
+- All configurations must evaluate without errors
+
+### Build Testing
+- **nixos-rebuild build** must succeed
+- No breaking changes to existing functionality
+
+These standards are NON-NEGOTIABLE and must be followed for every change, no matter how small.
