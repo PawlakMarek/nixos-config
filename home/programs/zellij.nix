@@ -47,7 +47,7 @@
             SwitchToMode = "Normal";
           };
           "bind \"x\"" = {
-            CloseFocus = true;
+            CloseFocus = {};
             SwitchToMode = "Normal";
           };
 
