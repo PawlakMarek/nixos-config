@@ -1,4 +1,8 @@
-{config, lib, ...}: {
+{
+  config,
+  lib,
+  ...
+}: {
   programs = {
     zsh = {
       enable = true;
@@ -146,6 +150,59 @@
       bashrcExtra = ''
         # Custom prompt
         PS1='\\[\\033[01;32m\\]\\u@\\h\\[\\033[00m\\]:\\[\\033[01;34m\\]\\w\\[\\033[00m\\]\\$ '
+
+        # Terminal productivity functions
+        # Quick directory navigation with fuzzy finding
+        cdg() {
+          local dir
+          dir=$(find ~/dev ~/Documents ~/Downloads -type d -maxdepth 3 2>/dev/null | fzf --height 40% --reverse)
+          [ -n "$dir" ] && cd "$dir"
+        }
+
+        # Quick file editing with fuzzy finding
+        fe() {
+          local file
+          file=$(fd --type f --hidden --follow --exclude .git | fzf --preview 'bat --color=always {}' --height 60%)
+          [ -n "$file" ] && $EDITOR "$file"
+        }
+
+        # Enhanced grep with ripgrep and fzf
+        rgg() {
+          rg --color=always --line-number --no-heading --smart-case "''${1:-}" |
+            fzf --ansi \
+                --color "hl:-1:underline,hl+:-1:underline:reverse" \
+                --delimiter : \
+                --preview 'bat --color=always {1} --highlight-line {2}' \
+                --bind 'enter:become($EDITOR {1} +{2})'
+        }
+
+        # Git log with fzf preview
+        gll() {
+          git log --color=always --format="%C(auto)%h%d %s %C(black)%C(bold)%cr" "$@" |
+            fzf --ansi --no-sort --reverse --tiebreak=index \
+                --preview 'f() { set -- $(echo -- "$@" | grep -o "[a-f0-9]\\{7\\}"); [ $# -eq 0 ] || git show --color=always $1; }; f {}' \
+                --bind 'enter:become(sh -c "f() { set -- \\$(echo -- \\"\\$@\\" | grep -o \\"[a-f0-9]\\\\{7\\\\}\\"); [ \\$# -eq 0 ] || git show \\$1; }; f {}")'
+        }
+
+        # Process finder with kill option
+        pk() {
+          local pid
+          pid=$(ps -ef | sed 1d | fzf -m | awk '{print $2}')
+          if [ -n "$pid" ]; then
+            echo "$pid" | xargs kill "''${1:-9}"
+          fi
+        }
+
+        # Quick tmux session switcher
+        ts() {
+          local session
+          session=$(tmux list-sessions -F "#{session_name}" 2>/dev/null | fzf --height 40% --reverse)
+          if [ -n "$session" ]; then
+            tmux attach-session -t "$session"
+          else
+            tmux new-session
+          fi
+        }
       '';
     };
 

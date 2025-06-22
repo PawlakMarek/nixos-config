@@ -13,7 +13,6 @@ with lib; {
     keyMode = "vi";
 
     plugins = with pkgs.tmuxPlugins; [
-      sensible
       yank
       resurrect
       continuum
@@ -44,6 +43,11 @@ with lib; {
       # True color support
       set -ag terminal-overrides ",xterm-256color:RGB"
       set -ag terminal-overrides ",tmux-256color:RGB"
+
+      # Sensible defaults (manual implementation to avoid shell conflicts)
+      set -g default-terminal "tmux-256color"
+      set -g status-keys emacs
+      set -g mode-keys vi
 
       # Faster command sequences
       set -s escape-time 10
