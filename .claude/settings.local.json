@@ -25,7 +25,8 @@
       "Bash(unset GTK_THEME)",
       "Bash(export:*)",
       "Bash(echo:*)",
-      "Bash(home-manager switch:*)"
+      "Bash(home-manager switch:*)",
+      "Bash(./scripts/check-quality.sh:*)"
     ],
     "deny": []
   }
