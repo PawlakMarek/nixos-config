@@ -69,7 +69,10 @@
 
     # Enter the dev shell with the original directory as working directory
     cd "$FLAKE_ROOT"
-    exec nix develop ".#$SHELL_NAME" --command bash -c "cd '$ORIGINAL_DIR' && exec \$SHELL"
+
+    # Use the user's preferred shell, falling back to zsh if SHELL is not set
+    USER_SHELL=''${SHELL:-/usr/bin/env zsh}
+    exec nix develop ".#$SHELL_NAME" --command bash -c "cd '$ORIGINAL_DIR' && exec '$USER_SHELL'"
   '';
 
   # Create individual shell commands for convenience
