@@ -29,7 +29,9 @@
       "Bash(./scripts/check-quality.sh:*)",
       "Bash(git pull:*)",
       "Bash(git push:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git checkout:*)"
     ],
     "deny": []
   }
