@@ -72,6 +72,15 @@
       defaultApplications.enable = true;
     };
 
+    screen-lock = {
+      enable = true;
+      locker = "xfce4-screensaver";
+      lockOnSuspend = true;
+      lockOnLidClose = true;
+      inactivityTimeout = 10;
+      shortcut = "<Super>l";
+    };
+
     theming = {
       enable = true;
       variant = "mocha";

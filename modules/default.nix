@@ -15,6 +15,7 @@
     ./core/security/sops.nix
 
     # Desktop modules
+    ./desktop/screen-lock.nix
     ./desktop/theming.nix
     ./desktop/xfce
 
@@ -46,6 +47,7 @@
         "core.security.hardening"
         "core.security.luks"
         "core.security.sops"
+        "desktop.screen-lock"
         "desktop.theming"
         "desktop.xfce"
       ];

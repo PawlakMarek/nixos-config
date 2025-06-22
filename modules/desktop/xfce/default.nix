@@ -52,7 +52,6 @@ in {
           xterm.enable = false;
           xfce = {
             enable = true;
-            enableScreensaver = false; # Use separate screensaver/locker
             noDesktop = false;
             enableXfwm = true;
           };
