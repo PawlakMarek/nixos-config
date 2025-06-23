@@ -95,6 +95,10 @@ in
       NIXOS_CONFIG_DIR="$HOME/nixos-config"
       HOST_NAME=$(hostname)
 
+      # Ensure Home Manager shells take priority over nix store shells
+      # This fixes the bash/zsh prompt formatting issues in dev shells
+      export PATH="/etc/profiles/per-user/$(whoami)/bin:$PATH"
+
       # Define quality check function
       qc() {
         echo "🔍 Running quality checks from $(pwd)..."

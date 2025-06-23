@@ -32,5 +32,9 @@ pkgs.mkShell {
     echo "To activate virtual environment: source .venv/bin/activate"
     echo "To install dependencies: uv add <package>"
     echo "To run with uv: uv run <command>"
+
+    # Ensure Home Manager shells take priority over nix store shells
+    # This fixes the bash/zsh prompt formatting issues in dev shells
+    export PATH="/etc/profiles/per-user/$(whoami)/bin:$PATH"
   '';
 }
