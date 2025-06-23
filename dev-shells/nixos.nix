@@ -49,13 +49,50 @@ in
       echo "🏗️  NixOS configuration development environment loaded"
       echo "📍 Current directory: $(pwd)"
       echo ""
+
+      # Dynamically determine paths and hostname
+      NIXOS_CONFIG_DIR="$HOME/nixos-config"
+      HOST_NAME=$(hostname)
+
+      # Define quality check function
+      qc() {
+        echo "🔍 Running quality checks from $(pwd)..."
+        (
+          cd "$NIXOS_CONFIG_DIR" || { echo "❌ Could not change to $NIXOS_CONFIG_DIR"; return 1; }
+          echo "📝 Formatting code..."
+          alejandra . && \
+          echo "🔍 Checking for linting issues..." && \
+          statix check . && \
+          echo "💀 Checking for dead code..." && \
+          deadnix . && \
+          echo "✅ Validating flake..." && \
+          nix flake check && \
+          echo "🏗️  Testing build..." && \
+          nixos-rebuild build --flake ".#$HOST_NAME" && \
+          echo "✅ All quality checks passed!"
+        )
+      }
+
+      # Define quick rebuild function
+      qr() {
+        echo "🚀 Quick rebuild from $(pwd)..."
+        (
+          cd "$NIXOS_CONFIG_DIR" || { echo "❌ Could not change to $NIXOS_CONFIG_DIR"; return 1; }
+          echo "🔄 Applying configuration..."
+          sudo nixos-rebuild switch --flake ".#$HOST_NAME" && \
+          echo "✅ System rebuilt successfully!"
+        )
+      }
+
       echo "Available commands:"
+      echo "  qc                  - Run complete quality check pipeline"
+      echo "  qr                  - Quick rebuild (nixos-rebuild switch)"
       echo "  alejandra .         - Format all Nix files"
       echo "  statix check .      - Lint Nix files"
       echo "  deadnix .           - Find dead code"
       echo "  nix flake check     - Validate flake"
-      echo "  nixos-rebuild build --flake .#h4wkeye-dev - Test build"
-      echo "  nixos-rebuild switch --flake .#h4wkeye-dev - Apply changes"
+      echo "  nixos-rebuild build --flake .#$HOST_NAME - Test build"
+      echo "  nixos-rebuild switch --flake .#$HOST_NAME - Apply changes"
       echo "  claude              - Claude Code CLI"
       echo ""
       echo "Git shortcuts available:"
