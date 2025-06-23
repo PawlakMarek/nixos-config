@@ -71,7 +71,8 @@
     cd "$FLAKE_ROOT"
 
     # Use the user's preferred shell, falling back to zsh if SHELL is not set
-    USER_SHELL=''${SHELL:-/usr/bin/env zsh}
+    # Get the actual shell binary path, not just the environment variable
+    USER_SHELL=''${SHELL:-$(which zsh)}
 
     # Special handling for nixos dev shell - always start in nixos-config directory
     if [[ "$SHELL_NAME" == "nixos" ]]; then
