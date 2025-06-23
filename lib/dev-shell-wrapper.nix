@@ -102,9 +102,21 @@
 
           cd "$FLAKE_ROOT"
           if [[ "$USER_SHELL" == *"zsh"* ]]; then
-            exec nix develop ".#$SHELL_NAME" --command zsh --rcs -c "source '$TEMP_RC'; rm '$TEMP_RC'; exec zsh"
+            # For zsh, we need to source the functions in the shell startup
+            exec nix develop ".#$SHELL_NAME" --command zsh -c "
+              source '$TEMP_RC'
+              rm '$TEMP_RC'
+              # Start an interactive zsh session
+              exec zsh
+            "
           else
-            exec nix develop ".#$SHELL_NAME" --command bash --rcfile "$TEMP_RC" -c "rm '$TEMP_RC'; exec bash"
+            # For bash, use the rcfile approach but don't remove immediately
+            exec nix develop ".#$SHELL_NAME" --command bash -c "
+              source '$TEMP_RC'
+              rm '$TEMP_RC'
+              # Start an interactive bash session
+              exec bash
+            "
           fi
         else
           # For other dev shells, preserve the original directory
