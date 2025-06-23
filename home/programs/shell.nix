@@ -2,7 +2,53 @@
   config,
   lib,
   ...
-}: {
+}: let
+  # Shell cleanup scripts for cross-shell compatibility
+  cleanBashEnv = ''
+    # Remove bash-specific starship setup that might interfere
+    unset PROMPT_COMMAND 2>/dev/null || true
+    unset -f starship_preexec starship_precmd 2>/dev/null || true
+    unset -f starship_preexec_all starship_preexec_ps0 2>/dev/null || true
+    unset STARSHIP_PROMPT_COMMAND 2>/dev/null || true
+    unset STARSHIP_DEBUG_TRAP 2>/dev/null || true
+  '';
+
+  cleanAllShells = ''
+    # Clear all starship-related variables
+    unset STARSHIP_SHELL STARSHIP_SESSION_KEY 2>/dev/null || true
+    unset STARSHIP_START_TIME STARSHIP_DURATION STARSHIP_CMD_STATUS 2>/dev/null || true
+    unset STARSHIP_PIPE_STATUS STARSHIP_JOBS_COUNT STARSHIP_PROMPT_COMMAND 2>/dev/null || true
+    unset STARSHIP_DEBUG_TRAP 2>/dev/null || true
+
+    # Clear all prompt variables
+    unset PS1 PS2 PS3 PS4 PROMPT PROMPT_COMMAND 2>/dev/null || true
+    unset RPS1 RPROMPT 2>/dev/null || true
+
+    # Remove all starship-related functions
+    unset -f starship_preexec starship_precmd 2>/dev/null || true
+    unset -f starship_preexec_all starship_preexec_ps0 2>/dev/null || true
+    unset -f prompt_starship_precmd prompt_starship_preexec 2>/dev/null || true
+    unset -f starship_zle-keymap-select starship_zle-keymap-select-wrapped 2>/dev/null || true
+    unset __starship_preserved_zle_keymap_select 2>/dev/null || true
+
+    # Clear completion functions that might conflict
+    complete -r 2>/dev/null || true
+  '';
+
+  initBash = ''
+    # Clean environment first
+    ${cleanAllShells}
+
+    # Initialize starship fresh for bash
+    if command -v starship >/dev/null 2>&1; then
+      export STARSHIP_SHELL=bash
+      eval "$(starship init bash --print-full-init)"
+    else
+      # Fallback prompt without escape sequences
+      PS1='[\u@\h \W]\$ '
+    fi
+  '';
+in {
   programs = {
     zsh = {
       enable = true;
@@ -83,9 +129,8 @@
       };
 
       initContent = ''
-        # Custom prompt
-        autoload -U colors && colors
-        PS1="%{$fg[cyan]%}%n@%m%{$reset_color%}:%{$fg[blue]%}%~%{$reset_color%}$ "
+        # Clean shell environment for zsh
+        ${cleanBashEnv}
 
         # Auto-cd into directory
         setopt AUTO_CD
@@ -156,19 +201,8 @@
       inherit (config.programs.zsh) shellAliases;
 
       bashrcExtra = ''
-        # Clean slate for starship in bash
-        unset STARSHIP_SHELL 2>/dev/null || true
-        unset STARSHIP_SESSION_KEY 2>/dev/null || true
-        unset PS1 PROMPT_COMMAND 2>/dev/null || true
-
-        # Initialize starship fresh for bash
-        if command -v starship >/dev/null 2>&1; then
-          export STARSHIP_SHELL=bash
-          eval "$(starship init bash --print-full-init)"
-        else
-          # Fallback prompt
-          PS1='\\[\\033[01;32m\\]\\u@\\h\\[\\033[00m\\]:\\[\\033[01;34m\\]\\w\\[\\033[00m\\]\\$ '
-        fi
+        # Use shell cleanup for consistent bash environment setup
+        ${initBash}
 
         # Terminal productivity functions
         # Quick directory navigation with fuzzy finding

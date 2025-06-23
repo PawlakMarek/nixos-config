@@ -29,5 +29,9 @@ pkgs.mkShell {
     echo "  npm (default, ready to use)"
     echo "  pnpm (run 'corepack enable && corepack use pnpm@latest')"
     echo "  yarn (run 'corepack enable && corepack use yarn@stable')"
+
+    # Ensure Home Manager shells take priority over nix store shells
+    # This fixes the bash/zsh prompt formatting issues in dev shells
+    export PATH="/etc/profiles/per-user/$(whoami)/bin:$PATH"
   '';
 }

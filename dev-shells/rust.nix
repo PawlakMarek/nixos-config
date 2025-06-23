@@ -28,5 +28,9 @@ pkgs.mkShell {
     echo "🦀 Rust development environment loaded"
     echo "Rust version: $(rustc --version)"
     echo "Cargo version: $(cargo --version)"
+
+    # Ensure Home Manager shells take priority over nix store shells
+    # This fixes the bash/zsh prompt formatting issues in dev shells
+    export PATH="/etc/profiles/per-user/$(whoami)/bin:$PATH"
   '';
 }
