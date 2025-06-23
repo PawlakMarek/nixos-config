@@ -39,6 +39,47 @@ in
 
         # Editor (if needed)
         neovim
+
+        # Custom dev shell commands
+        (writeShellScriptBin "qc" ''
+          #!/usr/bin/env bash
+          set -euo pipefail
+
+          NIXOS_CONFIG_DIR="$HOME/nixos-config"
+          HOST_NAME=$(hostname)
+
+          echo "🔍 Running quality checks from $(pwd)..."
+          (
+            cd "$NIXOS_CONFIG_DIR" || { echo "❌ Could not change to $NIXOS_CONFIG_DIR"; exit 1; }
+            echo "📝 Formatting code..."
+            alejandra . && \
+            echo "🔍 Checking for linting issues..." && \
+            statix check . && \
+            echo "💀 Checking for dead code..." && \
+            deadnix . && \
+            echo "✅ Validating flake..." && \
+            nix flake check && \
+            echo "🏗️  Testing build..." && \
+            nixos-rebuild build --flake ".#$HOST_NAME" && \
+            echo "✅ All quality checks passed!"
+          )
+        '')
+
+        (writeShellScriptBin "qr" ''
+          #!/usr/bin/env bash
+          set -euo pipefail
+
+          NIXOS_CONFIG_DIR="$HOME/nixos-config"
+          HOST_NAME=$(hostname)
+
+          echo "🚀 Quick rebuild from $(pwd)..."
+          (
+            cd "$NIXOS_CONFIG_DIR" || { echo "❌ Could not change to $NIXOS_CONFIG_DIR"; exit 1; }
+            echo "🔄 Applying configuration..."
+            sudo nixos-rebuild switch --flake ".#$HOST_NAME" && \
+            echo "✅ System rebuilt successfully!"
+          )
+        '')
       ]
       ++ [
         # Unfree packages
