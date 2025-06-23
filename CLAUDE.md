@@ -101,16 +101,22 @@ sudo nixos-rebuild switch --flake .#h4wkeye-dev
 # Test build without switching
 nixos-rebuild build --flake .#h4wkeye-dev
 
-# Enter development environment
-nix develop
+# Enter development environments (available globally from any directory)
+nixos-dev    # NixOS configuration development with quality check commands
+rust-dev     # Rust development environment with full toolchain
+python-dev   # Python environment with modern uv package manager
+js-dev       # JavaScript/TypeScript with Node.js 24 and corepack
+nix-dev      # Nix language development with Lix and language servers
 
-# Format all Nix files
-alejandra .
+# Quality check automation (available in nixos-dev environment)
+qc           # Complete quality check pipeline (format, lint, deadnix, flake check, build)
+qr           # Quick rebuild (nixos-rebuild switch)
 
-# Lint and check for issues
-statix check .
-deadnix .
-nix flake check
+# Manual quality checks
+alejandra .  # Format all Nix files
+statix check .  # Lint and check for issues
+deadnix .    # Find dead code
+nix flake check  # Validate flake
 
 # Validate module structure
 nix eval .#nixosConfigurations.h4wkeye-dev.config.modules._meta
@@ -295,9 +301,45 @@ services.someService = {
 - `modules.core.security.sops`: SOPS encrypted secrets management
 - `modules.desktop.theming`: System-wide Catppuccin theming
 - `modules.desktop.xfce`: XFCE desktop environment with customizations
-- Development tools (nixvim, git, firefox) and shell configuration
+- Development tools (nixvim, git, firefox, zellij) and enhanced shell configuration
+- Global dev shell system with cross-shell compatibility fixes
 
-### Recent Improvements (2025-06-22)
+### Development History & Improvements
+
+#### Latest Improvements (2025-06-23)
+
+1. **Development Environment Overhaul**:
+   - **Zellij Integration**: Complete terminal multiplexer setup with Catppuccin Mocha theming
+   - **Dev Shell Enhancement**: All environments now show specific names (rust-dev, python-dev, etc.)
+   - **Global Accessibility**: Dev shells accessible from any directory via wrapper system
+   - **Cross-Shell Compatibility**: Fixed critical bash/zsh prompt formatting issues in dev environments
+
+2. **Zellij Configuration**:
+   - Implemented comprehensive Catppuccin Mocha theming with dynamic accent colors
+   - Increased scroll buffer to 50000 for consistency with other terminal configurations
+   - Added development-focused layouts (editor, terminal, logs)
+   - Proper integration with system-wide theming configuration
+
+3. **Dev Shell Infrastructure**:
+   - Created global dev shell wrapper system (`lib/dev-shell-wrapper.nix`)
+   - Added quality check automation (qc/qr commands) for nixos development
+   - Implemented dynamic hostname detection and path resolution
+   - Fixed PATH prioritization to use Home Manager shell binaries
+
+4. **Shell Environment Fixes**:
+   - **Root Cause Identified**: Dev shells were using nix store binaries instead of Home Manager binaries
+   - **Solution Implemented**: Modified PATH to prioritize `/etc/profiles/per-user/$(whoami)/bin`
+   - **Impact**: Eliminated bind/complete command errors and escape sequence artifacts
+   - **Result**: Consistent shell behavior inside and outside dev environments
+
+5. **Language-Specific Environments**:
+   - **Rust**: Enhanced with clippy, rust-analyzer, cargo-watch, and audit tools
+   - **Python**: Modern tooling with uv package manager, ruff linter, mypy, pytest
+   - **JavaScript**: Node.js 24 with corepack for pnpm/yarn support, TypeScript, ESLint
+   - **Nix**: Comprehensive Lix-based development with language servers and tools
+   - **NixOS**: Dedicated environment with quality check commands and system rebuild tools
+
+#### Previous Improvements (2025-06-22)
 
 1. **Modular Architecture Cleanup**: 
    - Created centralized `modules/default.nix` for organized imports
@@ -320,13 +362,41 @@ services.someService = {
    - Added proper assertions and validation throughout modules
    - Fixed typos and improved error messages
 
+### Current Development Environment Features
+
+1. **Terminal Multiplexing**: 
+   - Zellij with Catppuccin Mocha theming and 50000 line scroll buffer
+   - Pre-configured development layouts (editor, terminal, logs)
+   - Dynamic accent color integration with system theming
+
+2. **Development Shells** (Available globally from any directory):
+   ```bash
+   nixos-dev    # NixOS configuration development with qc/qr commands
+   rust-dev     # Rust development with full toolchain
+   python-dev   # Python with modern uv package manager  
+   js-dev       # JavaScript/TypeScript with Node.js 24
+   nix-dev      # Nix language development with Lix
+   ```
+
+3. **Quality Automation**:
+   ```bash
+   # In nixos-dev environment
+   qc    # Complete quality check pipeline (format, lint, build)
+   qr    # Quick rebuild (nixos-rebuild switch)
+   ```
+
+4. **Shell Compatibility**:
+   - Seamless switching between bash and zsh within dev environments
+   - Proper starship prompt initialization for both shells
+   - Home Manager shell configuration takes precedence over nix store binaries
+
 ### Next Development Priorities
 
-1. **NixVim configuration**: Comprehensive editor setup
-2. **Development shells**: Language-specific environments  
-3. **Module templates**: Standardized module creation templates
-4. **Testing framework**: Module validation and integration tests
-5. **Community templates**: Shareable configuration templates
+1. **NixVim configuration**: Comprehensive declarative Neovim setup
+2. **Module templates**: Standardized templates for community sharing
+3. **Testing framework**: Automated module validation and integration tests
+4. **Documentation generation**: Automated option documentation from module definitions
+5. **Community templates**: Ready-to-use configuration templates for different use cases
 
 ## Troubleshooting Common Issues
 
@@ -362,6 +432,40 @@ sudo tpm2_getcap properties-variable
 - Check for syntax errors with `nix eval`
 - Ensure proper option types and defaults
 - Validate assertions and conditions
+
+### Dev Shell and Terminal Issues
+
+**Problem**: Shell prompt formatting errors when switching shells in dev environments
+```
+bash: bind: command not found
+bash: complete: not a shell builtin
+\[\]\[\]\[\]
+```
+
+**Root Cause**: Dev shells were using nix store shell binaries instead of Home Manager binaries
+
+**Solution**: 
+- All dev shells now modify PATH to prioritize Home Manager binaries
+- Use `/etc/profiles/per-user/$(whoami)/bin/bash` instead of `/nix/store/.../bash`
+- Ensures proper starship configuration and cross-shell compatibility
+
+**Testing**:
+```bash
+# Enter any dev shell
+nixos-dev
+
+# Test shell switching (should work without errors)
+bash
+zsh
+
+# Verify correct binary is used
+which bash  # Should show /etc/profiles/per-user/h4wkeye/bin/bash
+```
+
+**Zellij Issues**:
+- If text is hard to read, check accent color configuration in `modules.desktop.theming`
+- Scroll buffer size can be adjusted in `home/programs/zellij.nix`
+- Theme changes require system rebuild: `sudo nixos-rebuild switch --flake .`
 
 ### Recent Code Quality Improvements
 
