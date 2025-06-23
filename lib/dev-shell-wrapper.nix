@@ -70,17 +70,16 @@
     # Enter the dev shell with the appropriate working directory
     cd "$FLAKE_ROOT"
 
-    # Use the user's preferred shell, falling back to zsh if SHELL is not set
-    # Get the actual shell binary path, not just the environment variable
-    USER_SHELL=''${SHELL:-$(which zsh)}
+    # Store the user's current shell before entering dev environment
+    ORIGINAL_SHELL="$SHELL"
 
     # Special handling for nixos dev shell - always start in nixos-config directory
     if [[ "$SHELL_NAME" == "nixos" ]]; then
       echo "🏗️  Starting in NixOS configuration directory"
-      exec nix develop ".#$SHELL_NAME" --command "$USER_SHELL" -c "cd '$FLAKE_ROOT' && exec \$SHELL"
+      exec nix develop ".#$SHELL_NAME" --command bash -c "cd '$FLAKE_ROOT' && exec '$ORIGINAL_SHELL'"
     else
       # For other dev shells, preserve the original directory
-      exec nix develop ".#$SHELL_NAME" --command "$USER_SHELL" -c "cd '$ORIGINAL_DIR' && exec \$SHELL"
+      exec nix develop ".#$SHELL_NAME" --command bash -c "cd '$ORIGINAL_DIR' && exec '$ORIGINAL_SHELL'"
     fi
   '';
 
