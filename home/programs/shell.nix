@@ -156,8 +156,17 @@
       inherit (config.programs.zsh) shellAliases;
 
       bashrcExtra = ''
-        # Custom prompt
-        PS1='\\[\\033[01;32m\\]\\u@\\h\\[\\033[00m\\]:\\[\\033[01;34m\\]\\w\\[\\033[00m\\]\\$ '
+        # Reset any inherited prompt variables
+        unset STARSHIP_SHELL 2>/dev/null || true
+        unset STARSHIP_SESSION_KEY 2>/dev/null || true
+
+        # Ensure bash gets its own starship initialization
+        if command -v starship >/dev/null 2>&1; then
+          eval "$(starship init bash)"
+        else
+          # Fallback custom prompt if starship isn't available
+          PS1='\\[\\033[01;32m\\]\\u@\\h\\[\\033[00m\\]:\\[\\033[01;34m\\]\\w\\[\\033[00m\\]\\$ '
+        fi
 
         # Terminal productivity functions
         # Quick directory navigation with fuzzy finding
